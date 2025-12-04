@@ -81,7 +81,7 @@ namespace Assessment1
             }
             else
             {
-                // Otherwise, find the last element
+                // Start at head
                 Element<T>? currentElement = _head;
                 // Traverse to the last element
                 while (currentElement.Next != null)
@@ -98,11 +98,13 @@ namespace Assessment1
         // Remove from front of list 
         public T PopFront()
         {
+            // if list is empty throw exception
             if (_head == null)
             {
                 throw new InvalidOperationException("List is empty");
             }
 
+            // get value from head and move head to next element
             T value = _head.Data;
             _head = _head.Next;
             return value;
@@ -112,6 +114,7 @@ namespace Assessment1
         // Remove from back of list 
         public T PopBack()
         {
+            // if list is empty throw exception
             if (_head == null)
             {
                 throw new InvalidOperationException("List is empty");
@@ -125,7 +128,7 @@ namespace Assessment1
                 return value;
             }
 
-            // traverse to second-last element
+            // traverse to second last element
             Element<T>? currentElement = _head;
             while (currentElement.Next != null && currentElement.Next.Next != null)
             {
@@ -142,11 +145,12 @@ namespace Assessment1
         // Peek at front element
         public T PeekFront()
         {
+            // if list is empty throw exception
             if (_head == null)
             {
                 throw new InvalidOperationException("List is empty");
             }
-
+            // return data at head
             return _head.Data;
         }
 
@@ -154,17 +158,20 @@ namespace Assessment1
         // Peek at back element
         public T PeekBack()
         {
+            // if list is empty throw exception
             if (_head == null)
             {
                 throw new InvalidOperationException("List is empty");
             }
 
+            // traverse to last element
             Element<T>? currentElement = _head;
             while (currentElement.Next != null)
             {
+                // Move to next element
                 currentElement = currentElement.Next;
             }
-
+            // return data at last element
             return currentElement.Data;
         }
 
@@ -182,8 +189,9 @@ namespace Assessment1
                 return;
             }
 
-            // traverse until we find the right spot
+            // traverse the list to find insertion point
             Element<T>? currentElement = _head;
+            // find the first element with lower priority
             while (currentElement.Next != null && comparison(data, currentElement.Next.Data) >= 0)
             {
                 currentElement = currentElement.Next;

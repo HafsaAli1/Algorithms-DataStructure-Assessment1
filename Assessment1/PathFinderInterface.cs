@@ -17,7 +17,6 @@ namespace Assessment1
         // The return parameter should indicate the success or otherwise of the search.
         public bool FindPath(Grid map, Coord start, Coord goal, ref LinkedList<Coord> path);
 
-        // TODO (for a first) Add another method to expand one ply of the search tree.
-        //      You may with to have ref parameters to pass out lists of coords on the open and closed lists too?
+        
     }
 }

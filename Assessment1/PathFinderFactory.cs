@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace Assessment1
 {
-    // TODO: Make the enum match the algorithms you've implemented
+    // Enumeration of available pathfinding algorithms
     enum Algorithm { 
         BreadthFirst, 
         DepthFirst, 
-        HillClimbing
+        HillClimbing,
+        BestFirst,
+        Dijkstras
     }
 
     internal class PathFinderFactory
@@ -24,15 +26,27 @@ namespace Assessment1
             PathFinderInterface pathFinder; // variable type references the INTERFACE (abstract base)
             switch (algorithm)
             {
+                // Depth First Search
                 case Algorithm.DepthFirst:
                     pathFinder = new DepthFirst();
                     break;
 
+                // Hill Climbing Search
                 case Algorithm.HillClimbing:
                     pathFinder = new HillClimbing();
                     break;
 
-                // TODO: Add more cases the more algorithms you implement
+                // Best First Search
+                case Algorithm.BestFirst:
+                    pathFinder = new BestFirst();
+                    break;
+
+                // Dijkstras
+                case Algorithm.Dijkstras:
+                    pathFinder = new Dijkstras();
+                    break;
+
+                // Default to Breadth First Search
                 default:
                     pathFinder = new BreadthFirst();
                     break;

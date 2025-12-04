@@ -1,4 +1,5 @@
 ﻿using System;
+using static Assessment1.SearchNode;
 
 namespace Assessment1
 {
@@ -9,96 +10,70 @@ namespace Assessment1
             int rows = map.GetLength(0);
             int cols = map.GetLength(1);
 
-            // 1. Create the Open List and Closed List
+            // Create Open and Closed lists (Queues)
             var open = new Queue<SearchNode>();
             var closed = new Queue<SearchNode>();
 
-            // 2. Put the start position into the Open List
-            open.Enqueue(new SearchNode(start));
+            // Put the start node on open list
+            var startNode = new SearchNode(start);
+            open.Enqueue(startNode);
 
             SearchNode current = null;
 
-            // 3. Repeat until Open List is empty
+            // Loop until open list is empty
             while (!open.IsEmpty())
             {
-                // a. Take first node as Current
+                // Remove first item and call it Current
                 current = open.Dequeue();
 
-                // b. If Current is the goal → success
+                // Check if current is the goal
                 if (current.Position.Row == goal.Row &&
                     current.Position.Col == goal.Col)
                 {
-                    // Build path by following predecessors backwards
+                    // Build path and return true 
                     path = SearchUtilities.buildPathList(current);
                     return true;
                 }
 
-                // c. Add CURRENT to CLOSED
+                // Add Current to closed list
                 closed.Enqueue(current);
 
+                // Check each of the 4 directions
                 foreach (Coord direction in SearchUtilities.Directions)
                 {
                     Coord next = new Coord(
                         current.Position.Row + direction.Row,
                         current.Position.Col + direction.Col
                     );
-                
 
-                // i. Bounds check
-                if (next.Row < 0 || next.Row >= rows ||
+                    // Check the neighbours 
+                    if (next.Row < 0 || next.Row >= rows ||
                         next.Col < 0 || next.Col >= cols)
                         continue;
 
-                    // ii. Walls cannot be crossed
+                    // Check if there is a wall
                     if (map[next.Row, next.Col] == 0)
                         continue;
 
-                    // iii. Skip if this coordinate is already in CLOSED
-                    if (ContainsCoord(closed, next))
+                    // A SearchNode for the neighbour
+                    SearchNode nextNode = new SearchNode(next);
+
+                    // Check if it is already in closed list
+                    if (closed.Contains(nextNode))
                         continue;
 
-                    // iv. Skip if already in OPEN
-                    if (ContainsCoord(open, next))
+                    // Check if it is already in open list
+                    if (open.Contains(nextNode))
                         continue;
 
-                    // v. Otherwise add a new node for that neighbour
+                    // Add neighbour to open list
                     open.Enqueue(new SearchNode(next, 0, 0, current));
                 }
             }
 
-            // If we exit the loop → no path found
+            // No path found
             path = new LinkedList<Coord>();
             return false;
-        }
-
-
-        // Minimal helper (required because your Queue<T> has no Contains)
-        private bool ContainsCoord(Queue<SearchNode> q, Coord c)
-        {
-            // Temporary queue to preserve contents
-            var temp = new Queue<SearchNode>();
-            bool found = false;
-
-            while (!q.IsEmpty())
-            {
-                var item = q.Dequeue();
-
-                if (item.Position.Row == c.Row &&
-                    item.Position.Col == c.Col)
-                {
-                    found = true;
-                }
-
-                temp.Enqueue(item);
-            }
-
-            // Restore original queue
-            while (!temp.IsEmpty())
-            {
-                q.Enqueue(temp.Dequeue());
-            }
-
-            return found;
         }
     }
 }

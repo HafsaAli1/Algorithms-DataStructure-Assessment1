@@ -13,37 +13,44 @@ namespace Assessment1
             int rows = map.GetLength(0);
             int cols = map.GetLength(1);
 
-            // 1) Create OpenList, ClosedList and TmpList
+            // Create open list
             var open = new Queue<SearchNode>();
+
+            // Create closed list
             var closed = new Queue<SearchNode>();
+
+            // create temporary list for neighbours
             var tmp = new Queue<SearchNode>();
 
-            // Visited grid to avoid revisiting states
+            // Create visited array
             bool[,] visited = new bool[rows, cols];
 
-            // 2) Push the initial state (start) on to OpenList
+            // Put the start node on open list and mark as visited
             open.Enqueue(new SearchNode(start));
             visited[start.Row, start.Col] = true;
 
+            // Initialise current node
             SearchNode? current = null;
 
-            // 3) Until a goal state is found or OpenList is empty
+            // Loop until open list is empty
             while (!open.IsEmpty())
             {
-                // (a) Remove (pop) the first element from OpenList and call it 'current'.
+                // Remove the first item from open list and call it current
                 current = open.Dequeue();
 
-                // (c) If 'current' is the goal state, return success
+                // Check if current is the goal
                 if (current.Position.Row == goal.Row &&
                     current.Position.Col == goal.Col)
                 {
+                    // Build path 
                     path = SearchUtilities.buildPathList(current);
                     return true;
                 }
 
-                // (1)(e) Add 'current' to ClosedList (mainly for debugging / completeness)
+                // Add current to closed list
                 closed.Enqueue(current);
 
+                // Check each of the 4 directions
                 foreach (Coord direction in SearchUtilities.Directions)
                 {
                     Coord next = new Coord(
@@ -57,51 +64,52 @@ namespace Assessment1
                         next.Col < 0 || next.Col >= cols)
                         continue;
 
-                    // Check wall (0 means blocked)
+                    // Check walls 
                     if (map[next.Row, next.Col] == 0)
                         continue;
 
-                    // Already visited?
+                    // Check if already visited
                     if (visited[next.Row, next.Col])
                         continue;
 
-                    // (d)(i) Calculate heuristic value (Manhattan distance)
+                    // Calculate heuristic value
                     int h = SearchUtilities.ManhattanDistance(next, goal);
 
-                    // Create SearchNode with predecessor
+                    // Create SearchNode for neighbour
                     var node = new SearchNode(next, 0, h, current);
 
-                    // Mark visited and add to TmpList
+                    // Mark as visited and add to Temporary list
                     visited[next.Row, next.Col] = true;
                     tmp.Enqueue(node);
                 }
 
-                // If no neighbours were added, move on to the next in OpenList (backtracking)
+                // If Temporary list is empty continue
                 if (tmp.IsEmpty())
                     continue;
 
-                // (e) Sort TmpList according to the heuristic values
                 var list = new List<SearchNode>();
+                // Move TmpList to a List for sorting
                 while (!tmp.IsEmpty())
                     list.Add(tmp.Dequeue());
-
+                // Sort by heuristic value
                 list.Sort((a, b) => a.Score.CompareTo(b.Score));
 
-                // (f) Add TmpList to the front of OpenList
-                // To "prepend" them, we temporarily move OpenList aside,
-                // then put sorted neighbours in first, then the old contents after.
+                // Add TmpList to the front of OpenList
                 var old = new Queue<SearchNode>();
+                // Move OpenList to old list
                 while (!open.IsEmpty())
                     old.Enqueue(open.Dequeue());
 
+                // Move sorted neighbours to OpenList
                 foreach (var node in list)
                     open.Enqueue(node);
 
+                // Move old OpenList items to the back of OpenList
                 while (!old.IsEmpty())
                     open.Enqueue(old.Dequeue());
             }
 
-            // If we get here → OpenList empty and no goal found
+            // No path found
             path = new LinkedList<Coord>();
             return false;
         }

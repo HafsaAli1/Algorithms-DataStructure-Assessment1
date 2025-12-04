@@ -1,4 +1,5 @@
 ﻿using System;
+using static Assessment1.SearchNode;
 
 namespace Assessment1
 {
@@ -9,97 +10,68 @@ namespace Assessment1
             int rows = map.GetLength(0);
             int cols = map.GetLength(1);
 
-            // 1. Create the OPEN list (Stack) and CLOSED list (Stack)
+            // Create open list 
             var open = new Stack<SearchNode>();
-            var closed = new Stack<SearchNode>();
 
-            // 2. Push the start node onto OPEN
+            // Create closed list
+            var closed = new LinkedList<Coord>();
+
+            // Put the start node on open list
             open.Push(new SearchNode(start));
-
+            // Initialise current node
             SearchNode current = null;
 
-            // 3. Loop until OPEN empty or goal found
+            // Loop until open list is empty
             while (!open.IsEmpty())
             {
-                // a. Pop the top item from OPEN
+                // Pop the top item from open list and call it Current
                 current = open.Pop();
 
-                // b. If Current is Goal → success
+                // Check if current is the goal
                 if (current.Position.Row == goal.Row &&
                     current.Position.Col == goal.Col)
                 {
+                    // Build path and return true
                     path = SearchUtilities.buildPathList(current);
                     return true;
                 }
 
-                // c. Add Current to CLOSED
-                closed.Push(current);
+                // Add Current to closed list
+                closed.PushFront(current.Position);
 
-                foreach (Coord direction in SearchUtilities.Directions)
+                // Check each of the 4 directions
+                foreach (Coord dir in SearchUtilities.Directions)
                 {
                     Coord next = new Coord(
-                        current.Position.Row + direction.Row,
-                        current.Position.Col + direction.Col
+                        current.Position.Row + dir.Row,
+                        current.Position.Col + dir.Col
                     );
-                
 
-                // i. Bounds check
-                if (next.Row < 0 || next.Row >= rows ||
+                    // Check the neighbours
+                    if (next.Row < 0 || next.Row >= rows ||
                         next.Col < 0 || next.Col >= cols)
                         continue;
 
-                    // ii. Blocked?
+                    // Check if there is a wall
                     if (map[next.Row, next.Col] == 0)
                         continue;
 
-                    // iii. Already in CLOSED?
-                    if (StackContains(closed, next))
+                    // Check if already in closed list
+                    if (closed.Contains(next))
                         continue;
 
-                    // iv. Already in OPEN?
-                    if (StackContains(open, next))
+                    // Check if already in open list
+                    if (open.Contains(new SearchNode(next)))
                         continue;
 
-                    // v. Valid → push to OPEN, set predecessor
+                    // Add neighbour to open list
                     open.Push(new SearchNode(next, 0, 0, current));
                 }
             }
 
-            // NO path found
+            // No path found
             path = new LinkedList<Coord>();
             return false;
-        }
-
-        // -------------------------------------------------------------------
-        // Helper: check if a stack contains a Coord (same style as your BFS)
-        // -------------------------------------------------------------------
-        private bool StackContains(Stack<SearchNode> stack, Coord pos)
-        {
-            bool found = false;
-
-            Stack<SearchNode> temp = new Stack<SearchNode>();
-
-            // Pop all items, check each, and store in temp
-            while (!stack.IsEmpty())
-            {
-                var item = stack.Pop();
-
-                if (item.Position.Row == pos.Row &&
-                    item.Position.Col == pos.Col)
-                {
-                    found = true;
-                }
-
-                temp.Push(item);
-            }
-
-            // Restore original stack
-            while (!temp.IsEmpty())
-            {
-                stack.Push(temp.Pop());
-            }
-
-            return found;
         }
     }
 }
