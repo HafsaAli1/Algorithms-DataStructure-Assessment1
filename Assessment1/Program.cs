@@ -131,7 +131,7 @@ namespace Assessment1
 
 
 
-        // Prints the map with the path overlayed using P
+        // Prints the map with the path overlayed using #
         static void MapPath(int[,] map, LinkedList<Coord> path)
         {
             // Get map dimensions
@@ -160,7 +160,7 @@ namespace Assessment1
                     // Check if this cell is on the path
                     if (onPath[r, c])
                         // Print P for path
-                        Console.Write("P ");
+                        Console.Write("# ");
                     // Not on path so print original value
                     else
                         Console.Write(map[r, c] + " ");
