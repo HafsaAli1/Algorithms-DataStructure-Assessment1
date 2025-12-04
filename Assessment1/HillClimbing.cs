@@ -44,39 +44,35 @@ namespace Assessment1
                 // (1)(e) Add 'current' to ClosedList (mainly for debugging / completeness)
                 closed.Enqueue(current);
 
-                // (d) Generate neighbours (N, E, S, W — clockwise)
-                Coord[] neighbours =
+                foreach (Coord direction in SearchUtilities.Directions)
                 {
-                    new Coord(current.Position.Row - 1, current.Position.Col),     // North
-                    new Coord(current.Position.Row,     current.Position.Col + 1), // East
-                    new Coord(current.Position.Row + 1, current.Position.Col),     // South
-                    new Coord(current.Position.Row,     current.Position.Col - 1)  // West
-                };
+                    Coord next = new Coord(
+                        current.Position.Row + direction.Row,
+                        current.Position.Col + direction.Col
+                    );
+                
 
-                // (d)(i–ii) For each rule that can match 'current'
-                foreach (Coord nextPos in neighbours)
-                {
-                    // Check inside map bounds
-                    if (nextPos.Row < 0 || nextPos.Row >= rows ||
-                        nextPos.Col < 0 || nextPos.Col >= cols)
+                // Check inside map bounds
+                if (next.Row < 0 || next.Row >= rows ||
+                        next.Col < 0 || next.Col >= cols)
                         continue;
 
                     // Check wall (0 means blocked)
-                    if (map[nextPos.Row, nextPos.Col] == 0)
+                    if (map[next.Row, next.Col] == 0)
                         continue;
 
                     // Already visited?
-                    if (visited[nextPos.Row, nextPos.Col])
+                    if (visited[next.Row, next.Col])
                         continue;
 
                     // (d)(i) Calculate heuristic value (Manhattan distance)
-                    int h = SearchUtilities.ManhattanDistance(nextPos, goal);
+                    int h = SearchUtilities.ManhattanDistance(next, goal);
 
                     // Create SearchNode with predecessor
-                    var node = new SearchNode(nextPos, 0, h, current);
+                    var node = new SearchNode(next, 0, h, current);
 
                     // Mark visited and add to TmpList
-                    visited[nextPos.Row, nextPos.Col] = true;
+                    visited[next.Row, next.Col] = true;
                     tmp.Enqueue(node);
                 }
 

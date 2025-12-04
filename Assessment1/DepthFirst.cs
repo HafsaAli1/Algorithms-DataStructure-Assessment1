@@ -35,37 +35,33 @@ namespace Assessment1
                 // c. Add Current to CLOSED
                 closed.Push(current);
 
-                // d. Generate neighbours (clockwise: N, E, S, W)
-                Coord[] neighbours =
+                foreach (Coord direction in SearchUtilities.Directions)
                 {
-                    new Coord(current.Position.Row - 1, current.Position.Col), // North
-                    new Coord(current.Position.Row,     current.Position.Col + 1), // East
-                    new Coord(current.Position.Row + 1, current.Position.Col), // South
-                    new Coord(current.Position.Row,     current.Position.Col - 1)  // West
-                };
+                    Coord next = new Coord(
+                        current.Position.Row + direction.Row,
+                        current.Position.Col + direction.Col
+                    );
+                
 
-                // e. Process each neighbour
-                foreach (Coord nextPos in neighbours)
-                {
-                    // i. Bounds check
-                    if (nextPos.Row < 0 || nextPos.Row >= rows ||
-                        nextPos.Col < 0 || nextPos.Col >= cols)
+                // i. Bounds check
+                if (next.Row < 0 || next.Row >= rows ||
+                        next.Col < 0 || next.Col >= cols)
                         continue;
 
                     // ii. Blocked?
-                    if (map[nextPos.Row, nextPos.Col] == 0)
+                    if (map[next.Row, next.Col] == 0)
                         continue;
 
                     // iii. Already in CLOSED?
-                    if (StackContains(closed, nextPos))
+                    if (StackContains(closed, next))
                         continue;
 
                     // iv. Already in OPEN?
-                    if (StackContains(open, nextPos))
+                    if (StackContains(open, next))
                         continue;
 
                     // v. Valid → push to OPEN, set predecessor
-                    open.Push(new SearchNode(nextPos, 0, 0, current));
+                    open.Push(new SearchNode(next, 0, 0, current));
                 }
             }
 

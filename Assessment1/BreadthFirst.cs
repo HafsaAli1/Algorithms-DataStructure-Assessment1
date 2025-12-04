@@ -36,37 +36,33 @@ namespace Assessment1
                 // c. Add CURRENT to CLOSED
                 closed.Enqueue(current);
 
-                // d. Generate four neighbours (clockwise: N, E, S, W)
-                Coord[] neighbours =
+                foreach (Coord direction in SearchUtilities.Directions)
                 {
-                    new Coord(current.Position.Row - 1, current.Position.Col),     // North
-                    new Coord(current.Position.Row,     current.Position.Col + 1), // East
-                    new Coord(current.Position.Row + 1, current.Position.Col),     // South
-                    new Coord(current.Position.Row,     current.Position.Col - 1)  // West
-                };
+                    Coord next = new Coord(
+                        current.Position.Row + direction.Row,
+                        current.Position.Col + direction.Col
+                    );
+                
 
-                // e. Check each neighbour
-                foreach (Coord nextPos in neighbours)
-                {
-                    // i. Bounds check
-                    if (nextPos.Row < 0 || nextPos.Row >= rows ||
-                        nextPos.Col < 0 || nextPos.Col >= cols)
+                // i. Bounds check
+                if (next.Row < 0 || next.Row >= rows ||
+                        next.Col < 0 || next.Col >= cols)
                         continue;
 
                     // ii. Walls cannot be crossed
-                    if (map[nextPos.Row, nextPos.Col] == 0)
+                    if (map[next.Row, next.Col] == 0)
                         continue;
 
                     // iii. Skip if this coordinate is already in CLOSED
-                    if (ContainsCoord(closed, nextPos))
+                    if (ContainsCoord(closed, next))
                         continue;
 
                     // iv. Skip if already in OPEN
-                    if (ContainsCoord(open, nextPos))
+                    if (ContainsCoord(open, next))
                         continue;
 
                     // v. Otherwise add a new node for that neighbour
-                    open.Enqueue(new SearchNode(nextPos, 0, 0, current));
+                    open.Enqueue(new SearchNode(next, 0, 0, current));
                 }
             }
 
